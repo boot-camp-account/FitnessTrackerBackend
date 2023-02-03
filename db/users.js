@@ -52,6 +52,7 @@ async function getUserById(userId) {
     `);
 
     return user;
+    
   } catch (error) {
     console.error(error);
   }

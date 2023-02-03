@@ -63,12 +63,57 @@ async function getActivityByName(name) {
 
 async function attachActivitiesToRoutines(routines) {
   // select and return an array of all activities
+  
+  const routinesWithActivities = [...routines]; 
+  const routineIds = routines.maps(routine => routine.id)
+  const binds = routines.map((routine, index) => `$${index + 1}`).join(", ");
+
+  // get activities related to _any_ of the routines passed in
+  const { rows: activities } = await client.query(`
+    SELECT activities.*, routine_activities.duration, routine_activities.count, routine_activities."routineId", routine_activities.id AS "routineActivitiyId" FROM activities 
+    JOIN routine_activities ON activities.id = routine_activities."activityId"
+    WHERE routine_activities."routineId" IN (${binds})
+  `, routineIds)
+
+  // loop over the routines, add a key called activities with an array of related activities
+  
+
+  return routinesWithActivities;
+
 }
 
 async function updateActivity({ id, ...fields }) {
   // don't try to update the id
   // do update the name and description
   // return the updated activity
+
+  //spread operator/spread syntax means that you're passing in an object with an unknown amount of keys
+    const setString = Object.keys(fields).map(
+      (key, index) => `"${ key }"=$${ index + 1 }`
+    ).join(', ');
+  
+    // return early if this is called without fields
+    if (setString.length === 0) {
+      return;
+    }
+  
+    try {
+      const { rows: [ activity ] } = await client.query(`
+        UPDATE activities
+        SET ${ setString }
+        WHERE id=${ id }
+        RETURNING *;
+      `, Object.values(fields));
+  
+      return activity;
+
+    // when you use the $1 placeholder, you need to use the array as a second argument in order to get the actual values and they have to be in the same order as what you're looking for
+
+     } catch (error) {
+    console.log(error);
+  }
+  
+
 }
 
 module.exports = {
