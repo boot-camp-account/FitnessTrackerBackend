@@ -105,21 +105,23 @@ async function updateRoutine({ id, ...fields }) {
     return routine;
 
   // when you use the $1 placeholder, you need to use the array as a second argument in order to get the actual values and they have to be in the same order as what you're looking for
-
    } catch (error) {
   console.log(error);
 }
-
 }
 
-async function destroyRoutine(id) {
-   const { rows } = await client.query(`
-   DELETE FROM routines
-   WHERE id=$1
-   RETURNING *;
-   `, [id] );
+  async function destroyRoutine(id) { 
+    await client.query(`
+    DELETE FROM routine_activities 
+    WHERE "routineId" =$1;
+    `,[id] );
 
-  return rows
+    const {rows: [routine], } = await client.query(`
+    DELETE FROM routines 
+    WHERE id =$1;
+    `,[id] );
+    
+    return routine;
 }
 
 module.exports = {

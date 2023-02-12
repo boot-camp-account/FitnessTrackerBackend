@@ -37,7 +37,7 @@ const {
 
 describe("/api/users", () => {
   describe("POST /api/users/register", () => {
-    xit("Creates a new user.", async () => {
+    it("Creates a new user.", async () => {
       // Create some fake user data
       const fakeUserData = {
         username: faker.internet.userName(),
@@ -60,7 +60,7 @@ describe("/api/users", () => {
       });
     });
 
-    xit("EXTRA CREDIT: Hashes password before saving user to DB.", async () => {
+    it("EXTRA CREDIT: Hashes password before saving user to DB.", async () => {
       // Create some fake user data
       const fakeUserData = {
         username: faker.internet.userName(),
@@ -97,7 +97,7 @@ describe("/api/users", () => {
       );
     });
 
-    xit("Throws errors for duplicate username", async () => {
+    it("Throws errors for duplicate username", async () => {
       // Create a fake user in the DB
       const { fakeUser: firstUser } = await createFakeUserWithToken();
       // Now try to create a user with the same username
@@ -118,7 +118,7 @@ describe("/api/users", () => {
       );
     });
 
-    xit("returns error if password is less than 8 characters.", async () => {
+    it("returns error if password is less than 8 characters.", async () => {
       // Create some user data with a password with 7 characters
       const newUserShortPassword = {
         username: faker.internet.userName(),
@@ -134,29 +134,7 @@ describe("/api/users", () => {
   });
 
   describe("POST /api/users/login", () => {
-    xit("Logs in the user. Requires username and password, and verifies that hashed login password matches the saved hashed password.", async () => {
-      // Create some fake user data
-      const userData = {
-        username: faker.internet.userName(),
-        password: faker.internet.password(),
-      };
-      // Create the user in the DB
-      await createUser(userData);
-      // Login the user
-      const response = await request(app)
-        .post("/api/users/login")
-        .send(userData);
-
-      expectNotToBeError(response.body);
-
-      expect(response.body).toEqual(
-        objectContaining({
-          message: "you're logged in!",
-        })
-      );
-    });
-
-    xit("Logs in the user and returns the user back to us", async () => {
+    it("Logs in the user and returns the user back to us", async () => {
       // Create some fake user data
       const userData = {
         username: faker.internet.userName(),
@@ -176,8 +154,29 @@ describe("/api/users", () => {
         user,
       });
     });
+    it("Logs in the user. Requires username and password, and verifies that hashed login password matches the saved hashed password.", async () => {
+      // Create some fake user data
+      const userData = {
+        username: faker.internet.userName(),
+        password: faker.internet.password(),
+      };
+      // Create the user in the DB
+      await createUser(userData);
+      // Login the user
+      const response = await request(app)
+        .post("/api/users/login")
+        .send(userData);
 
-    xit("Returns a JSON Web Token. Stores the id and username in the token.", async () => {
+      expectNotToBeError(response.body);
+
+      expect(response.body).toEqual(
+        objectContaining({
+          message: "You're logged in!",
+        })
+      );
+    });
+
+    it("Returns a JSON Web Token. Stores the id and username in the token.", async () => {
       const userData = {
         username: faker.internet.userName(),
         password: faker.internet.password(),

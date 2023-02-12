@@ -6,7 +6,7 @@ const SALT_COUNT = 10;
 // user functions
 async function createUser({ username, password }) {
   const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
-  let userToAdd = { username, hashedPassword }
+  // let userToAdd = { username, hashedPassword }
   
   try {
     const { rows: [ user ] } = await client.query(`
@@ -17,13 +17,14 @@ async function createUser({ username, password }) {
     `, [username, hashedPassword]);
 
     // remove the password from the user object
-    delete user.password;
+    if (user) {
+      delete user.password}
 
     // return the user object without the password
     return user;
 
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 }
 

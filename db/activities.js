@@ -76,6 +76,8 @@ async function attachActivitiesToRoutines(routines) {
     WHERE routine_activities."routineId" IN (${binds})
   `, routineIds)
 
+  // so the "from" statement determines the "primary" table 
+
   // loop over the routines, add a key called activities with an array of related activities
   for (let i = 0; i < routinesWithActivities.length; i++) {
     const routine = routinesWithActivities[i]

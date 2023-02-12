@@ -32,10 +32,9 @@ async function getRoutineActivityById(id) {
 
 async function getRoutineActivitiesByRoutine({ id }) {
   try {
-    const { rows: [ routine ] } = await client.query(`
-    SELECT id FROM routine_activities
-    JOIN routines ON routine_activities."routineId"
-    WHERE id=${id}
+    const { rows: routine  } = await client.query(`
+    SELECT * FROM routine_activities
+    WHERE "routineId"=${id}
     `);
 
     return routine;
@@ -73,13 +72,12 @@ async function updateRoutineActivity({ id, ...fields }) {
 }
 
 async function destroyRoutineActivity(id) {
-  const { rows } = await client.query(`
-  DELETE FROM routine_activities
-  WHERE id=$1
-  RETURNING *;
-  `, [id] );
-
- return rows
+  const { rows: [routine] } = await client.query(`
+    DELETE FROM routine_activities 
+    WHERE id=$1;
+    `, [id] );
+    
+    return routine;
 }
 
 async function canEditRoutineActivity(routineActivityId, userId) {
